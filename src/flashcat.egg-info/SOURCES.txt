@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+src/flashcat/__init__.py
+src/flashcat/cli.py
+src/flashcat.egg-info/PKG-INFO
+src/flashcat.egg-info/SOURCES.txt
+src/flashcat.egg-info/dependency_links.txt
+src/flashcat.egg-info/entry_points.txt
+src/flashcat.egg-info/requires.txt
+src/flashcat.egg-info/top_level.txt

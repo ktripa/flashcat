@@ -1,0 +1,25 @@
+Metadata-Version: 2.4
+Name: flashcat
+Version: 0.0.1
+Summary: Flash-drought Computation & Analytics Toolkit
+Author-email: Kumar Puran Tripathy <tripathypuranbdk@gmail.com>
+License: BSD-3-Clause
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: xarray
+Requires-Dist: dask[complete]
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: pint
+Requires-Dist: pint-xarray
+Requires-Dist: cartopy
+Requires-Dist: typer
+Requires-Dist: rich
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: build; extra == "dev"
+
+ECHO is on.

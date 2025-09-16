@@ -1,0 +1,16 @@
+xarray
+dask[complete]
+numpy
+pandas
+pint
+pint-xarray
+cartopy
+typer
+rich
+
+[dev]
+pytest
+ruff
+black
+pre-commit
+build
