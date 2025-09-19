@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flashcat"
+version = "0.0.1"
+description = "Flash-drought Computation & Analytics Toolkit"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "BSD-3-Clause"}
+authors = [{name="Kumar Puran Tripathy", email="tripathypuranbdk@gmail.com"}]
+dependencies = [
+  "xarray",
+  "dask[complete]",
+  "numpy",
+  "pandas",
+  "pint",
+  "pint-xarray",
+  "cartopy",
+  "typer",
+  "rich"
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "black", "pre-commit", "build"]
+
+[project.scripts]
+flashcat = "flashcat.cli:app"
+
