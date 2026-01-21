@@ -9,32 +9,26 @@ def calc_eddi(pet: np.ndarray, dates: pd.DatetimeIndex, window: int = 14) -> pd.
     Returns Z-scores (Standard Deviations).
     """
     if window not in [14, 28]:
-        raise ValueError("EDDI usually supports 14 or 28 day windows.")
+        raise ValueError("The current package supports EDDI-14 and EDDI-28 only.")
 
     pet_vals = validate_input(pet)
     
-    # Step 1: Temporal Aggregation (14-day Running Mean)
-    # Uses 'min_periods' to allow calculation even if a few days are missing
+
     pet_series = pd.Series(pet_vals, index=dates)
     pet_agg = pet_series.rolling(window=window, min_periods=window).mean()
-
-    # Step 2: Standardization (Inverse Normal)
-    # This calls our corrected util function
-    eddi_z = get_empirical_probability(pet_agg.values, dates)
+    eddi_z = get_empirical_probability(pet_agg.values, dates) # empirical prob to Z-score (Hobbins et al. 2016)
     
     return pd.Series(eddi_z, index=dates, name=f'EDDI_{window}')
 
 def identify_flash_drought(eddi_z_series: pd.Series, window: int = 14) -> pd.DataFrame:
     """
-    Identifies flash drought events based on Pendergrass et al. (2020) / Parker et al. (2021).
+    Identifies flash drought events based on Ford et al (2023).
     """
     dates = eddi_z_series.index
     
     # 1. Convert Z-scores to Percentiles (0-100) for thresholding
-    # This matches your logic: >= 80th percentile
     pct = norm.cdf(eddi_z_series.values) * 100
     pct_series = pd.Series(pct, index=dates)
-
     # 2. Calculate the change over the window (Delta)
     delta = pct_series.diff(periods=window)
 
@@ -45,7 +39,7 @@ def identify_flash_drought(eddi_z_series: pd.Series, window: int = 14) -> pd.Dat
     # Thresholds
     THRESH_80 = 80.0   # Severity threshold
     DELTA_50 = 50.0    # Rapid intensification threshold
-    MIN_DURATION = window # Usually 14 or 28 days
+    MIN_DURATION = window # Minimum duration in days
 
     # Iterate through time (vectorized where possible, but loop needed for state)
     for i in range(window, len(pct)):
@@ -56,22 +50,17 @@ def identify_flash_drought(eddi_z_series: pd.Series, window: int = 14) -> pd.Dat
             continue
 
         if not in_event:
-            # CHECK ONSET:
-            # Rapid rise (>=50 percentile points) AND High Intensity (>=80th)
+            # Onset condition
             if (current_delta >= DELTA_50) and (current_pct >= THRESH_80):
                 in_event = True
                 onset_idx = i
                 
         else:
-            # CHECK TERMINATION:
-            # Validates if the event has ended (dropped below 80th)
-            # Simplification: If it drops below 80, we check if it STAYS below.
+            # Termination condition
             if current_pct < THRESH_80:
-                # We assume the event ends the day it drops below 80
                 event_end_idx = i - 1
                 duration_days = (dates[event_end_idx] - dates[onset_idx]).days
-                
-                # Filter: Must meet minimum duration (e.g., 14 days)
+
                 if duration_days >= MIN_DURATION:
                     events.append({
                         'onset_date': dates[onset_idx],
