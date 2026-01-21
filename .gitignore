@@ -1,0 +1,24 @@
+# Python junk
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Large Data files (IMPORTANT: Don't push large NetCDFs to GitHub)
+*.nc
+*.tif
+data/
