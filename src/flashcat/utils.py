@@ -38,4 +38,28 @@ def get_empirical_probability(data: np.ndarray, dates: pd.DatetimeIndex) -> np.n
 
     return result
 
-
+def daily_to_pentad(data: np.ndarray, dates: pd.DatetimeIndex) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Aggregates daily data to Pentads (73 periods per year).
+    Pentad 73 includes remaining days (Days 361-365/366).
+    
+    Returns:
+    --------
+    pentad_data : pd.DataFrame
+        Aggregated values (Year, Pentad, Value).
+    """
+    df = pd.DataFrame({'val': data, 'year': dates.year})
+    
+    # Create Pentad index (1-73)
+    # Day of year 1-5 -> Pentad 1, ..., 361+ -> Pentad 73
+    doy = dates.dayofyear
+    pentad_idx = np.ceil(doy / 5).astype(int)
+    pentad_idx = np.clip(pentad_idx, 1, 73) # Ensure days >365 go to 73
+    
+    df['pentad'] = pentad_idx
+    
+    # Group by Year and Pentad
+    # Taking the mean (ignoring NaNs)
+    aggregated = df.groupby(['year', 'pentad'])['val'].mean().reset_index()
+    
+    return aggregated
